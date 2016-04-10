@@ -7,17 +7,14 @@ def warpCrvs(crvs,res,ratio,thres,gen):
     attPts = []
     for n in range(gen):
         for i in range(len(crvs)):
+            validCrvs = []
             if rs.CurveLength(crvs[i])>res*2:
                 pts = rs.DivideCurveLength(crvs[i],res)
                 for j in range(len(pts)):
                     for k in range(len(crvs)):
                         if i!=k:
-                            param = rs.CurveClosestPoint(crvs[k],pts[j])
-                            attPt = rs.EvaluateCurve(crvs[k],param)
-                            if rs.Distance(attPt,pts[j])>0:
-                                attPts.append(attPt)
-                    index = rs.PointArrayClosestPoint(attPts,pts[j])
-                    closeAttPt = attPts[index]
+                            validCrvs.append(crvs[k])
+                    closeAttPt = rs.PointClosestObject(pts[j],validCrvs)[0]
                     if j==0 or j==len(pts)-1:
                         r = 0
                     else:
