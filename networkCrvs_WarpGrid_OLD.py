@@ -7,27 +7,26 @@ def warpCrvs(crvs,res,ratio,thres,gen):
     attPts = []
     for n in range(gen):
         for i in range(len(crvs)):
-            if rs.CurveLength(crvs[i])>res*2:
-                pts = rs.DivideCurveLength(crvs[i],res)
-                for j in range(len(pts)):
-                    for k in range(len(crvs)):
-                        if i!=k:
-                            param = rs.CurveClosestPoint(crvs[k],pts[j])
-                            attPt = rs.EvaluateCurve(crvs[k],param)
-                            if rs.Distance(attPt,pts[j])>0:
-                                attPts.append(attPt)
-                    index = rs.PointArrayClosestPoint(attPts,pts[j])
-                    closeAttPt = attPts[index]
-                    if j==0 or j==len(pts)-1:
-                        r = 0
-                    else:
-                        r = ratio
-                    if rs.Distance(closeAttPt,pts[j])<thres:
-                        vec = rs.VectorCreate(pts[j],closeAttPt)
-                        pts[j] = rs.PointAdd(pts[j],-vec*r)
-                    attPts = []
-                rs.DeleteObject(crvs[i])
-                crvs[i] = rs.AddCurve(pts)
+            pts = rs.DivideCurveLength(crvs[i],res)
+            for j in range(len(pts)):
+                for k in range(len(crvs)):
+                    if i!=k:
+                        param = rs.CurveClosestPoint(crvs[k],pts[j])
+                        attPt = rs.EvaluateCurve(crvs[k],param)
+                        if rs.Distance(attPt,pts[j])>0:
+                            attPts.append(attPt)
+                index = rs.PointArrayClosestPoint(attPts,pts[j])
+                closeAttPt = attPts[index]
+                if j==0 or j==len(pts)-1:
+                    r = 0
+                else:
+                    r = ratio
+                if rs.Distance(closeAttPt,pts[j])<thres:
+                    vec = rs.VectorCreate(pts[j],closeAttPt)
+                    pts[j] = rs.PointAdd(pts[j],-vec*r)
+                attPts = []
+            #rs.DeleteObject(crvs[i])
+            crvs[i] = rs.AddCurve(pts)
     return crvs
 
 def warpCrvsAttPt(crvs,res,ratio,thres,gen,attractors,strength):
@@ -35,12 +34,13 @@ def warpCrvsAttPt(crvs,res,ratio,thres,gen,attractors,strength):
     attPts = []
     for n in range(gen):
         for i in range(len(crvs)):
-            if rs.CurveLength(crvs[i])>res*2:
-                pts = rs.DivideCurveLength(crvs[i],res)
+            pts = rs.DivideCurveLength(crvs[i],res)
+            anchorStart = rs.CurveStartPoint(crvs[i])
+            anchorEnd = rs.CurveEndPoint(crvs[i])
+            if pts!=None:
                 for j in range(len(pts)):
                     for k in range(len(crvs)):
-                        testDist = rs.Distance(rs.CurveMidPoint(crvs[k]),pts[j])
-                        if i!=k and testDist<thres:
+                        if i!=k:
                             param = rs.CurveClosestPoint(crvs[k],pts[j])
                             attPt = rs.EvaluateCurve(crvs[k],param)
                             if rs.Distance(attPt,pts[j])>0:
@@ -59,25 +59,34 @@ def warpCrvsAttPt(crvs,res,ratio,thres,gen,attractors,strength):
                     else:
                         val = .5
                     ########### end attractor ##########
-                    if len(attPts)>0:
-                        index = rs.PointArrayClosestPoint(attPts,pts[j])
-                        closeAttPt = attPts[index]
-                        if rs.Distance(closeAttPt,pts[j])<thres:
-                            vec = rs.VectorCreate(pts[j],closeAttPt)
-                            pts[j] = rs.PointAdd(pts[j],-vec*ratio*val)
-                        attPts = []
-                rs.DeleteObject(crvs[i])
+                    index = rs.PointArrayClosestPoint(attPts,pts[j])
+                    closeAttPt = attPts[index]
+                    if rs.Distance(closeAttPt,pts[j])<thres and j!=0 and j!=len(pts)-1:
+                        vec = rs.VectorCreate(pts[j],closeAttPt)
+                        pts[j] = rs.PointAdd(pts[j],-vec*ratio*val)
+                    attPts = []
+                #pts = pts.insert(0,anchorStart)
+                #pts = pts.append(anchorEnd)
+                #rs.DeleteObject(crvs[i])
                 crvs[i] = rs.AddCurve(pts)
 
 def Main():
     crvs = rs.GetObjects("Please select curves",rs.filter.curve)
     attractors = rs.GetObjects("please select attractors",rs.filter.point)
     strength = rs.GetReal("please enter desired strength",20)
+<<<<<<< HEAD:networkCrvs_WarpGrid.py
     res = rs.GetReal("Please select resolution",2)
     thres = rs.GetReal("Please select threshold",9)
     ratio = rs.GetReal("Please select ratio of snap",.75)
     gen = rs.GetInteger("Please enter number of generations",2)
     r.shuffle(crvs)
+=======
+    res = rs.GetReal("Please select resolution",1)
+    thres = rs.GetReal("Please select threshold",9)
+    ratio = rs.GetReal("Please select ratio of snap",1.5)
+    gen = rs.GetInteger("Please enter number of generations",3)
+    #r.shuffle(crvs)
+>>>>>>> f0c33e73f88875c81216af9447063e9fb346df9c:networkCrvs_WarpGrid_OLD.py
     rs.EnableRedraw(False)
     #crvs = warpCrvs01(crvs,res,ratio,thres)
     #thres = thresRatio*res
