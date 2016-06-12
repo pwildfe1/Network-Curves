@@ -74,22 +74,11 @@ def Main():
     crvs = rs.GetObjects("Please select curves",rs.filter.curve)
     attractors = rs.GetObjects("please select attractors",rs.filter.point)
     strength = rs.GetReal("please enter desired strength",20)
-<<<<<<< HEAD:networkCrvs_WarpGrid.py
-    res = rs.GetReal("Please select resolution",2)
-    thres = rs.GetReal("Please select threshold",9)
-    ratio = rs.GetReal("Please select ratio of snap",.75)
-    gen = rs.GetInteger("Please enter number of generations",2)
-    r.shuffle(crvs)
-=======
     res = rs.GetReal("Please select resolution",1)
     thres = rs.GetReal("Please select threshold",9)
     ratio = rs.GetReal("Please select ratio of snap",1.5)
     gen = rs.GetInteger("Please enter number of generations",3)
-    #r.shuffle(crvs)
->>>>>>> f0c33e73f88875c81216af9447063e9fb346df9c:networkCrvs_WarpGrid_OLD.py
     rs.EnableRedraw(False)
-    #crvs = warpCrvs01(crvs,res,ratio,thres)
-    #thres = thresRatio*res
     crvs = warpCrvsAttPt(crvs,res,ratio,thres,gen,attractors,strength)
     rs.EnableRedraw(True)
     return crvs
